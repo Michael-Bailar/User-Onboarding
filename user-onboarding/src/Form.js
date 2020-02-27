@@ -91,7 +91,7 @@ const FormikUserForm = withFormik({
                               return true;
                           }),
         email: Yup.string().required("Email is required")
-                           .test('test-name', 'Enter Valid Email', 
+                           .test('test-name', 'Enter valid email', 
                             function(value) {
                               const emailCheck = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
                               let isValidEmail = emailCheck.test(value);
@@ -99,7 +99,9 @@ const FormikUserForm = withFormik({
                                 return false;
                               }
                               return true;
-                            })
+                            }),
+        password: Yup.string().required("Password is required")
+                              .test('length', 'Password must be exactly 6 characters', value => value.length === 6)
     }),
 
     handleSubmit(values, { setStatus, resetForm }) {
