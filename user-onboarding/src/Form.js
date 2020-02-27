@@ -32,7 +32,7 @@ const UserForm = ({values, errors, touched, status}) => {
                     Email:
                     <Field 
                         id="email"
-                        type="text"
+                        type="email"
                         name="email"
                         placeholder="email address"
                     />
@@ -45,7 +45,7 @@ const UserForm = ({values, errors, touched, status}) => {
                     Password:
                     <Field 
                         id="password"
-                        type="text"
+                        type="password"
                         name="password"
                         placeholder="password"
                     />
@@ -53,6 +53,18 @@ const UserForm = ({values, errors, touched, status}) => {
                         <p className="errors">{errors.password}</p>
                     )}
                 </label> 
+                <br/>
+                <label className="tos-checkbox">
+                    Do you accept the terms of service?
+                    <Field 
+                        type="checkbox"
+                        name="tos"
+                        checked={values.checkbox}
+                        />
+                    {touched.tos && errors.tos &&(
+                        <p className="errors">{errors.tos}</p>
+                    )}
+                </label>
                 <br/>
                 <button type="submit">Submit!</button>       
             </Form> 
@@ -75,13 +87,15 @@ const FormikUserForm = withFormik({
         return {
             name: props.name || "",
             email: props.email || "",
-            password: props.password || ""
+            password: props.password || "",
+            tos: props.tos || true
         }
     },
 
     validationSchema: Yup.object({
-        name: Yup.string().required("name is required")
-                          .test('test-name', "you cannot have numbers in your name",
+        name: Yup.string().required("Name is required")
+                          .test('test-name',
+                          "you cannot have numbers in your name",
                           function(value) {
                               const nameCheck = /^([^0-9]*)$/;
                               let isValidName = nameCheck.test(value);
@@ -91,17 +105,20 @@ const FormikUserForm = withFormik({
                               return true;
                           }),
         email: Yup.string().required("Email is required")
-                           .test('test-name', 'Enter valid email', 
-                            function(value) {
-                              const emailCheck = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-                              let isValidEmail = emailCheck.test(value);
-                              if (!isValidEmail){
-                                return false;
-                              }
-                              return true;
-                            }),
-        password: Yup.string().required("Password is required")
-                              .test('length', 'Password must be exactly 6 characters', value => value.length === 6)
+                        .test('test-name',
+                        'Enter valid email', 
+                        function(value) {
+                        const emailCheck = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                        let isValidEmail = emailCheck.test(value);
+                        if (!isValidEmail){
+                            return false;
+                            }
+                            return true;
+                        }),
+        password: Yup.string().required()
+                        .matches(/^[0-9]+$/, "Your password can only contain numbers"),
+        tos: Yup.boolean().oneOf([true], "You must accept the terms of service")
+
     }),
 
     handleSubmit(values, { setStatus, resetForm }) {
